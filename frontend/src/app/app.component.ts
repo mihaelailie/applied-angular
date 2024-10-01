@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { NavbarComponent } from './components/navbar/navbar.component';
-
+import { NavbarComponent } from "./components/navbar/navbar.component";
 
 @Component({
   selector: 'app-root',
@@ -10,8 +9,7 @@ import { NavbarComponent } from './components/navbar/navbar.component';
     <app-nav-bar />
    
     <main class="container mx-auto">
-      
-      
+      <router-outlet />
     </main>
   `,
   styles: [],

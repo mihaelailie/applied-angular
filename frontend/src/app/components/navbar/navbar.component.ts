@@ -1,12 +1,15 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { NavbarCenterMenuComponents } from "./components/navbar-center-menu.components";
 import { NavbarEndComponent } from "./components/navbar-end.component";
-import { NavbarItemsComponent } from "./components/navbar-items.component";
+import { NavbarItemsComponent } from "./components/navbar-side-menu.component";
+import { LinkItem } from './types';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-nav-bar',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NavbarEndComponent, NavbarItemsComponent],
+  imports: [NavbarEndComponent, NavbarItemsComponent, NavbarCenterMenuComponents, RouterLink],
   template: `
     <div class="navbar bg-base-100">
       <div class="navbar-start">
@@ -27,19 +30,16 @@ import { NavbarItemsComponent } from "./components/navbar-items.component";
               />
             </svg>
           </div>
-          <ul
-            tabindex="0"
-            class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
-          >
-<app-nav-bar-items />
-          </ul>
+         
+<app-nav-bar-side-menu-items [links]="links" />
+        
         </div>
-        <a class="btn btn-ghost text-xl">Applied Angular</a>
+        <a  routerLink="/" class="btn btn-ghost text-xl">Applied Angular</a>
       </div>
       <div class="navbar-center hidden lg:flex">
-        <ul class="menu menu-horizontal px-1">
-         <app-nav-bar-items />
-        </ul>
+      
+         <app-nav-bar-center-items [links]="links"  />
+        
       </div>
       <div class="navbar-end">
         <app-nav-bar-end />
@@ -48,4 +48,18 @@ import { NavbarItemsComponent } from "./components/navbar-items.component";
   `,
   styles: ``,
 })
-export class NavbarComponent {}
+export class NavbarComponent {
+
+  // "parent component"
+  // own the list of links that should be shown in all child components.
+  links:LinkItem[] = [
+    {
+      path: '/learning',
+      text: 'Stuff From Class'
+    },
+    {
+      path: '/halloween',
+      text: 'Halloween Tracker'
+    }
+  ]
+}
