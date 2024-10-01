@@ -1,29 +1,28 @@
-import { computeMsgId } from '@angular/compiler';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  signal,
-} from '@angular/core';
-type GolfHole = {
-  holeNumber: number;
-  score: number;
-};
+  DecrementButtonDirective,
+  IncrementButtonDirective,
+} from '@shared/increment-button.directive';
+import { GolfService } from './golf.service';
+import { GolfStore } from '../../../shared/golf.store';
+
 @Component({
+  selector: 'app-golf-game',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [],
+  providers: [],
+  imports: [IncrementButtonDirective, DecrementButtonDirective],
   template: `
     <div>
       <div>
-        <button class="btn btn-primary" (click)="decrement()">-</button>
-        <span>{{ currentScore() }}</span>
-        <button class="btn btn-primary" (click)="increment()">+</button>
-        <button class="btn btn-primary" (click)="sunk()">Sunk</button>
+        <button appDecrementButton (click)="service.decrement()">-</button>
+        <span>{{ service.currentScore() }}</span>
+        <button appIncrementButton (click)="service.increment()">+</button>
+        <button class="btn" (click)="service.sunk()">Sunk</button>
       </div>
 
       <ul>
-        @for(hole of holes(); track hole.holeNumber) {
+        @for(hole of service.holes(); track hole.holeNumber) {
         <li>Hole {{ hole.holeNumber }}: {{ hole.score }}</li>
         } @empty {
         <p>
@@ -31,43 +30,15 @@ type GolfHole = {
         </p>
         }
       </ul>
-      @if(currentHole() === 1) {
+      @if(service.currentHole() === 1) {
       <p>Have a great game!</p>
       } @else {
-      <p>You have a total score of {{ totalScore() }}</p>
+      <p>You have a total score of {{ service.totalScore() }}</p>
       }
     </div>
   `,
   styles: ``,
 })
 export class GolfComponent {
-  currentScore = signal(0);
-  currentHole = signal(1);
-  holes = signal<GolfHole[]>([]);
-  increment() {
-    this.currentScore.update((s) => s + 1);
-  }
-  decrement() {
-    this.currentScore.update((s) => s - 1);
-  }
-
-  totalScore = computed(() => {
-    const finalScore = this.holes() // this holes signal is still referring to the same value.
-      .map((s) => s.score) // score
-      .reduce((a, b) => a + b, 0);
-    return finalScore;
-  });
-  sunk() {
-    const record: GolfHole = {
-      holeNumber: this.currentHole(),
-      score: this.currentScore(),
-    };
-    // this.holes.update((h) => {
-    //   h.push(record);
-    //   return [...h];
-    // });
-    this.holes.set([record, ...this.holes()]); // reassigning this to a new list
-    this.currentHole.update((h) => (h += 1));
-    this.currentScore.set(0);
-  }
+  service = inject(GolfStore);
 }
